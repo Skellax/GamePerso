@@ -1,13 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting.Dependencies.NCalc;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 public class PlayerController : MonoBehaviour
 {
     private Rigidbody2D rb;
-    [SerializeField] private float jump;
-    [SerializeField] private float speed;
+     [SerializeField] private float jump;
+    private float speed = 5f;
+
+    private float timeForRun = 0.5f;
     [SerializeField] private bool isGrounded = true;
 
     [SerializeField] private bool isJumped = false;
@@ -25,6 +28,7 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        timeForRun = 0.5f;
     }
 
     public Rigidbody2D GetRB()
@@ -35,7 +39,7 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {     
-        //Function gerant le saut du personnage.
+        //Function for jump.
         if (Input.GetButtonDown("Jump") && isGrounded)
         {
             isGrounded = false;
@@ -64,6 +68,27 @@ public class PlayerController : MonoBehaviour
         
         horizontalInput = Input.GetAxis("Horizontal");
         rb.velocity = new Vector2(speed * horizontalInput, rb.velocity.y);
+        HandleRun();
+    }
+
+    //function for increase the speed when the character move
+    private void HandleRun()
+    {
+        if (Mathf.Abs(horizontalInput) > 0)
+        {
+            if(timeForRun > 0)
+            {
+                speed += 0.5f;
+                timeForRun -= Time.deltaTime;
+
+            }
+        }
+        else if (horizontalInput == 0)
+        {
+            timeForRun = 0.5f;
+            speed = 5f;
+        }
+        
     }
 
     private void OnTriggerEnter2D(Collider2D other) {
